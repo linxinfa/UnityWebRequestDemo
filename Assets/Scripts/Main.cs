@@ -35,7 +35,7 @@ public class Main : MonoBehaviour
         {
             var filePath = Path.Combine(Application.dataPath, UPLOAD_FILE_NAME);
             var fileName = Path.GetFileName(filePath);
-            byte[] data = ReadLogFile(filePath);
+            byte[] data = ReadLocalFile(filePath);
             Debug.Log(data.Length);
             StartCoroutine(UploadFile(UPLOAD_URL, fileName, data));
         });
@@ -78,7 +78,7 @@ public class Main : MonoBehaviour
     /// 读取文件的字节流
     /// </summary>
     /// <returns></returns>
-    private byte[] ReadLogFile(string filePath)
+    private byte[] ReadLocalFile(string filePath)
     {
         byte[] data = null;
 
@@ -87,6 +87,7 @@ public class Main : MonoBehaviour
             int index = 0;
             long len = fs.Length;
             data = new byte[len];
+            // 考虑文件可能很大，进行分段读取
             int offset = data.Length > 1024 ? 1024 : data.Length;
             while (index < len)
             {
@@ -110,7 +111,7 @@ public class Main : MonoBehaviour
     {
         WWWForm form = new WWWForm();
         form.AddField("desc", "test upload file");
-        form.AddBinaryData("value", data, fileName, "application/x-gzip");
+        form.AddBinaryData("file_data", data, fileName, "application/x-gzip");
         // 使用UnityWebRequest
         UnityWebRequest request = UnityWebRequest.Post(url, form);
         var result = request.SendWebRequest();
