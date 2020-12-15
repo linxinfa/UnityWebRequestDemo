@@ -113,13 +113,17 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
         desc = form['desc'].value
-        filename = form['value'].filename
-        filevalue = form['value'].value
+        # 文件名
+        filename = form['file_data'].filename
+        # 文件的字节流
+        filevalue = form['file_data'].value
         filesize = len(filevalue)
+        # 文件写入
         with open(filename, 'wb') as f:
                 f.write(filevalue)
         msg = 'upload success, file: %s, size:  %d, desc: %s'%(filename, filesize, desc)
         print(msg)
+        # 返回消息给客户端
         self.wfile.write(msg.encode("utf-8"))
         return
 
